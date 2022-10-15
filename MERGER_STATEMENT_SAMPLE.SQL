@@ -19,7 +19,7 @@ EXECUTE IMMEDIATE """
   MERGE `"""||project_dataset||"""."""||table_data||"""` T
   USING `"""||project_dataset||"""."""||table_changes||"""` S
     ON T."""||primary_key||""" = S."""||primary_key||"""
-  WHEN MATCHED THEN 
+  WHEN MATCHED AND T."""||primary_key||""" = S."""||primary_key||""" THEN 
     UPDATE SET """||updates||"""
   WHEN NOT MATCHED THEN
     INSERT ("""||fields||""") VALUES ("""||fields||""")""";
@@ -27,9 +27,11 @@ end;
 
 
 -- running example
+declare fields STRING;
+declare updates STRING;
 call `cesatriadata2022.ce_access_layer.upsert` (
-  'superstore_pr_orderdate_stag',
   'superstore_pr_orderdate',
+  'superstore_pr_orderdate_stag',
   'cesatriadata2022.ce_access_layer.',
   'order_id'
 )
